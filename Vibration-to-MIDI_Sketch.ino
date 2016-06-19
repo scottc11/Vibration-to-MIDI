@@ -11,6 +11,8 @@ char note = NOTES[noteNum];  //default note on startup will be A1
 int noteOctave = 1;
 bool buttonRightPressed = false;
 bool buttonLeftPressed = false;
+int buttonRightLED = 6;
+int buttonLeftLED = 7;
 
 void setup() 
 {
@@ -31,9 +33,9 @@ void loop()
   // BUTTON READINGS
 
   // NOTE UP
-  changeNote(buttonRightPressed, digitalRead(BUTTON_RIGHT));
+  changeNote(BUTTON_RIGHT, buttonRightPressed, digitalRead(BUTTON_RIGHT), buttonRightLED);
   // NOTE DOWN
-  changeNote(buttonLeftPressed, digitalRead(BUTTON_LEFT));
+  changeNote(BUTTON_LEFT, buttonLeftPressed, digitalRead(BUTTON_LEFT), buttonLeftLED);
 
   
   
@@ -57,16 +59,18 @@ void loop()
 }
 
 
-void changeNote(bool buttonPressedBool, int buttonState) {
+void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledPin) {
 
   // If button NOT pressed
   if (buttonState == LOW) {
     // boolean expression so function only runs once
     if (buttonPressedBool == true) {
       buttonRightPressed = false;
+      buttonLeftPressed = false;
     }
-    digitalWrite(6, HIGH); // LED OFF
-    digitalWrite(7, HIGH); // LED OFF
+    
+    // turn led off
+    digitalWrite(ledPin, HIGH); // LED OFF
   }
   
   //If button IS pressed
@@ -74,11 +78,20 @@ void changeNote(bool buttonPressedBool, int buttonState) {
 
     // boolean expression so function only runs once
     if (!buttonPressedBool) {
-      noteNum += 1;
-      buttonRightPressed = true;
+      
+      if (buttonPin == BUTTON_RIGHT) {
+        noteNum += 1;
+        buttonRightPressed = true;
+      }
+      if (buttonPin == BUTTON_LEFT) {
+        noteNum += -1;
+        buttonLeftPressed = true;
+      }
+      
     }
-    digitalWrite(6, LOW);  // LED ON
-    digitalWrite(7, LOW);  // LED ON
+    
+    // turn led on
+    digitalWrite(ledPin, LOW);  // LED ON
   }
 }
 
