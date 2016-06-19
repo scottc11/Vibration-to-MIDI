@@ -31,42 +31,10 @@ void loop()
   // BUTTON READINGS
 
   // NOTE UP
-  if (digitalRead(BUTTON_RIGHT) == LOW) {
-
-    // boolean expression so function only runs once
-    if (buttonRightPressed == true) {
-      buttonRightPressed = false;
-    }
-    digitalWrite(6, HIGH); // LED OFF
-  }
-  if (digitalRead(BUTTON_RIGHT) == HIGH) {
-
-    // boolean expression so function only runs once
-    if (!buttonRightPressed) {
-      noteNum += 1;
-      buttonRightPressed = true;
-    
-    }
-    digitalWrite(6, LOW);  // LED ON
-  }
-
+  changeNote(buttonRightPressed, digitalRead(BUTTON_RIGHT));
   // NOTE DOWN
-  if (digitalRead(BUTTON_LEFT) == LOW) {
-    // boolean expression so function only runs once
-    if (buttonLeftPressed == true) {
-      buttonLeftPressed = false;
-    }
-    digitalWrite(7, HIGH);  // LED OFF
-  }
-  if (digitalRead(BUTTON_LEFT) == HIGH) {
-    // boolean expression so function only runs once
-    if (!buttonLeftPressed) {
-      noteNum += -1;
-      buttonLeftPressed = true;
-    
-    }
-    digitalWrite(7, LOW);  // LED ON
-  }
+  changeNote(buttonLeftPressed, digitalRead(BUTTON_LEFT));
+
   
   
   // PIEZO READINGS
@@ -89,7 +57,30 @@ void loop()
 }
 
 
+void changeNote(bool buttonPressedBool, int buttonState) {
 
+  // If button NOT pressed
+  if (buttonState == LOW) {
+    // boolean expression so function only runs once
+    if (buttonPressedBool == true) {
+      buttonRightPressed = false;
+    }
+    digitalWrite(6, HIGH); // LED OFF
+    digitalWrite(7, HIGH); // LED OFF
+  }
+  
+  //If button IS pressed
+  if (buttonState == HIGH) {
+
+    // boolean expression so function only runs once
+    if (!buttonPressedBool) {
+      noteNum += 1;
+      buttonRightPressed = true;
+    }
+    digitalWrite(6, LOW);  // LED ON
+    digitalWrite(7, LOW);  // LED ON
+  }
+}
 
 
 
