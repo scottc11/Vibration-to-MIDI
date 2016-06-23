@@ -1,59 +1,57 @@
 
-const int PIEZO_PIN = A2; // Piezo output set to Anolog 2
+
 const int BUTTON_LEFT = 9; // MIDI note DOWN button set to Digital Pin 9
 const int BUTTON_RIGHT = 8; // MIDI note UP button set to Digital Pin 8
 
+int buttonLED = 13;
 
-
-char NOTES[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
-int noteNum = 0;  //for accessing NOTES[] array
-char note = NOTES[noteNum];  //default note on startup will be A1
+// MIDI note naming
+char noteArray[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+int noteArrayLength = 7;
+int noteIndex = 0;  // for accessing NOTES[] array
+char note = noteArray[noteIndex];  //default note on startup will be A1
 int noteOctave = 1;
-bool buttonRightPressed = false;
+
+
+// boolean expressions to ensure button presses only run their functions once
+bool buttonRightPressed = false;  
 bool buttonLeftPressed = false;
-int buttonRightLED = 6;
-int buttonLeftLED = 7;
+
+
 
 void setup() 
 {
   Serial.begin(9600);
   pinMode(BUTTON_RIGHT, INPUT);
   pinMode(BUTTON_LEFT, INPUT);
-  pinMode(6, OUTPUT); // MIDI Shield LED on pin 6
-  pinMode(7, OUTPUT); // MIDI Shield LED on pin 7
+  
 
 }
 
 void loop() 
 {
   // Read Piezo ADC value in, and convert it to a voltage
-  int piezoReading = analogRead(PIEZO_PIN);
-  int velocity = map(piezoReading, 0, 1023, 0, 127);  // convert reading to a velocity value (Between 0 - 127)
+  //  int piezoReading = analogRead(PIEZO_PIN);
+  //  int velocity = map(piezoReading, 0, 1023, 0, 127);  // convert reading to a velocity value (Between 0 - 127)
 
   // BUTTON READINGS
 
   // NOTE UP
-  changeNote(BUTTON_RIGHT, buttonRightPressed, digitalRead(BUTTON_RIGHT), buttonRightLED);
+  changeNote(BUTTON_RIGHT, buttonRightPressed, digitalRead(BUTTON_RIGHT), buttonLED);
+  
   // NOTE DOWN
-  changeNote(BUTTON_LEFT, buttonLeftPressed, digitalRead(BUTTON_LEFT), buttonLeftLED);
-
+  changeNote(BUTTON_LEFT, buttonLeftPressed, digitalRead(BUTTON_LEFT), buttonLED);
   
+  Serial.print("INDEX: ");
+  Serial.print(noteIndex);
+  Serial.print(" -- ");
+  Serial.print("OCTAVE: ");
+  Serial.print(noteOctave);
+  Serial.print(" -- ");
+  Serial.print("MIDI_NOTE: ");
+  Serial.print(noteArray[noteIndex]);
+  Serial.println(noteOctave);
   
-  // PIEZO READINGS
-  // Serial.println(piezoReading); // Print the velocity
-  
-  if (piezoReading > 10 && piezoReading < 20) {
-    Serial.println("---- SMALL vibration  --------");
-  }
-  if (piezoReading >= 20 && piezoReading < 50) {
-    Serial.println("=============================== MEDIUM vibration ========");
-  }
-  if (piezoReading >= 50 && piezoReading < 100) {
-    Serial.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ BIG vibration ++++++++++");
-  }
-  
-  Serial.print(noteNum);
-  Serial.println("NOTE: ");
 
   delay(20);
 }
@@ -69,8 +67,6 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
       buttonLeftPressed = false;
     }
     
-    // turn led off
-    digitalWrite(ledPin, HIGH); // LED OFF
   }
   
   //If button IS pressed
@@ -80,20 +76,46 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
     if (!buttonPressedBool) {
       
       if (buttonPin == BUTTON_RIGHT) {
-        noteNum += 1;
+        noteIndex += 1;
         buttonRightPressed = true;
+        changeOctave();
       }
       if (buttonPin == BUTTON_LEFT) {
-        noteNum += -1;
+        noteIndex += -1;
         buttonLeftPressed = true;
+        changeOctave();
       }
       
     }
-    
-    // turn led on
-    digitalWrite(ledPin, LOW);  // LED ON
   }
 }
+
+
+//change the noteOctave accordingly when noteIndex exceeds the size of noteArray
+
+
+void changeOctave() {
+
+  if (buttonRightPressed == true) {
+    if (noteIndex > noteArrayLength - 1 || noteIndex == 0) {
+      noteIndex = 0;
+      noteOctave += 1;
+    }
+  }
+
+  if (buttonLeftPressed == true) {
+    if (noteIndex == -1) {
+      noteOctave -= 1;
+    }
+
+    if (noteIndex < (noteArrayLength*-1) + 1) {
+      noteIndex = 0;
+      noteOctave -= 1;
+    }
+  }
+}
+
+
 
 
 
