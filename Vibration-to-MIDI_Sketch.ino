@@ -6,10 +6,10 @@ const int BUTTON_RIGHT = 8; // MIDI note UP button set to Digital Pin 8
 int buttonLED = 13;
 
 // MIDI note naming
-char noteArray[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
-int noteArrayLength = 7;
+String noteArray[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+int noteArrayLength = 12;
 int noteIndex = 0;  // for accessing NOTES[] array
-char note = noteArray[noteIndex];  //default note on startup will be A1
+String note = noteArray[noteIndex];  //default note on startup will be A1
 int noteOctave = 4;  // this is the middle octave for midi
 
 
@@ -105,7 +105,7 @@ void changeOctave() {
 
   if (buttonLeftPressed == true) {
     if (noteIndex < 0) {
-      noteIndex = 6;
+      noteIndex = 11;
       noteOctave -= 1;
     }
   }
