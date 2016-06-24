@@ -110,7 +110,6 @@ void changeOctave() {
 
     if (noteIndex < (noteArrayLength*-1) + 1) {
       noteIndex = 0;
-      noteOctave -= 1;
     }
   }
 }
