@@ -10,7 +10,7 @@ char noteArray[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
 int noteArrayLength = 7;
 int noteIndex = 0;  // for accessing NOTES[] array
 char note = noteArray[noteIndex];  //default note on startup will be A1
-int noteOctave = 1;
+int noteOctave = 4;  // this is the middle octave for midi
 
 
 // boolean expressions to ensure button presses only run their functions once
@@ -97,19 +97,16 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
 void changeOctave() {
 
   if (buttonRightPressed == true) {
-    if (noteIndex > noteArrayLength - 1 || noteIndex == 0) {
+    if (noteIndex > noteArrayLength - 1) {
       noteIndex = 0;
       noteOctave += 1;
     }
   }
 
   if (buttonLeftPressed == true) {
-    if (noteIndex == -1) {
+    if (noteIndex < 0) {
+      noteIndex = 6;
       noteOctave -= 1;
-    }
-
-    if (noteIndex < (noteArrayLength*-1) + 1) {
-      noteIndex = 0;
     }
   }
 }
