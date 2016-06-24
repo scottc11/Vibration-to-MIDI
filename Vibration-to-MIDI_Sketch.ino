@@ -1,7 +1,7 @@
 
+const int BUTTON_UP = 8; // MIDI note UP button set to Digital Pin 8
+const int BUTTON_DOWN = 9; // MIDI note DOWN button set to Digital Pin 9
 
-const int BUTTON_LEFT = 9; // MIDI note DOWN button set to Digital Pin 9
-const int BUTTON_RIGHT = 8; // MIDI note UP button set to Digital Pin 8
 
 int buttonLED = 13;
 
@@ -14,16 +14,16 @@ int noteOctave = 4;  // this is the middle octave for midi
 
 
 // boolean expressions to ensure button presses only run their functions once
-bool buttonRightPressed = false;  
-bool buttonLeftPressed = false;
+bool buttonUpPressed = false;  
+bool buttonDownPressed = false;
 
 
 
 void setup() 
 {
   Serial.begin(9600);
-  pinMode(BUTTON_RIGHT, INPUT);
-  pinMode(BUTTON_LEFT, INPUT);
+  pinMode(BUTTON_UP, INPUT);
+  pinMode(BUTTON_DOWN, INPUT);
   
 
 }
@@ -37,10 +37,10 @@ void loop()
   // BUTTON READINGS
 
   // NOTE UP
-  changeNote(BUTTON_RIGHT, buttonRightPressed, digitalRead(BUTTON_RIGHT), buttonLED);
+  changeNote(BUTTON_UP, buttonUpPressed, digitalRead(BUTTON_UP), buttonLED);
   
   // NOTE DOWN
-  changeNote(BUTTON_LEFT, buttonLeftPressed, digitalRead(BUTTON_LEFT), buttonLED);
+  changeNote(BUTTON_DOWN, buttonDownPressed, digitalRead(BUTTON_DOWN), buttonLED);
   
   Serial.print("INDEX: ");
   Serial.print(noteIndex);
@@ -63,8 +63,8 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
   if (buttonState == LOW) {
     // boolean expression so function only runs once
     if (buttonPressedBool == true) {
-      buttonRightPressed = false;
-      buttonLeftPressed = false;
+      buttonUpPressed = false;
+      buttonDownPressed = false;
     }
     
   }
@@ -75,14 +75,14 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
     // boolean expression so function only runs once
     if (!buttonPressedBool) {
       
-      if (buttonPin == BUTTON_RIGHT) {
+      if (buttonPin == BUTTON_UP) {
         noteIndex += 1;
-        buttonRightPressed = true;
+        buttonUpPressed = true;
         changeOctave();
       }
-      if (buttonPin == BUTTON_LEFT) {
+      if (buttonPin == BUTTON_DOWN) {
         noteIndex += -1;
-        buttonLeftPressed = true;
+        buttonDownPressed = true;
         changeOctave();
       }
       
@@ -93,17 +93,16 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
 
 //change the noteOctave accordingly when noteIndex exceeds the size of noteArray
 
-
 void changeOctave() {
 
-  if (buttonRightPressed == true) {
+  if (buttonUpPressed == true) {
     if (noteIndex > noteArrayLength - 1) {
       noteIndex = 0;
       noteOctave += 1;
     }
   }
 
-  if (buttonLeftPressed == true) {
+  if (buttonDownPressed == true) {
     if (noteIndex < 0) {
       noteIndex = 11;
       noteOctave -= 1;
