@@ -1,3 +1,9 @@
+#include <MIDI.h>
+#include <midi_Defs.h>
+#include <midi_Message.h>
+#include <midi_Namespace.h>
+#include <midi_Settings.h>
+
 
 const int BUTTON_UP = 8; // MIDI note UP button set to Digital Pin 8
 const int BUTTON_DOWN = 9; // MIDI note DOWN button set to Digital Pin 9
