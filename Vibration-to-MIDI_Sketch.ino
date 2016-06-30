@@ -4,6 +4,7 @@
 #include <midi_Namespace.h>
 #include <midi_Settings.h>
 
+// GIT BRANCH: midiShield
 
 const int BUTTON_UP = 8; // MIDI note UP button set to Digital Pin 8
 const int BUTTON_DOWN = 9; // MIDI note DOWN button set to Digital Pin 9
@@ -23,11 +24,15 @@ int noteOctave = 4;  // this is the middle octave for midi
 bool buttonUpPressed = false;  
 bool buttonDownPressed = false;
 
+// create a MIDI object instance
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 
 void setup() 
 {
-  Serial.begin(9600);
+  // MIDI.begin starts the serial port at the MIDI baudrate (31250).
+  // Set the input channel at the argument given (if any, else 1).
+  MIDI.begin();
   pinMode(BUTTON_UP, INPUT);
   pinMode(BUTTON_DOWN, INPUT);
   
@@ -47,6 +52,15 @@ void loop()
   
   // NOTE DOWN
   changeNote(BUTTON_DOWN, buttonDownPressed, digitalRead(BUTTON_DOWN), buttonLED);
+
+
+  MIDI.sendNoteOn(45, 100, 1);
+
+  delay(1000);
+
+  MIDI.sendNoteOff(45, 100, 1);
+
+  delay(1000);
   
   Serial.print("INDEX: ");
   Serial.print(noteIndex);
@@ -57,9 +71,6 @@ void loop()
   Serial.print("MIDI_NOTE: ");
   Serial.print(noteArray[noteIndex]);
   Serial.println(noteOctave);
-  
-
-  delay(20);
 }
 
 
