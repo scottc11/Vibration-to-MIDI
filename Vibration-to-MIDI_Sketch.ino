@@ -8,13 +8,14 @@
 
 const int BUTTON_UP = 8; // MIDI note UP button set to Digital Pin 8
 const int BUTTON_DOWN = 9; // MIDI note DOWN button set to Digital Pin 9
-
+const int BUTTON_SEND_NOTE = 10;  // Send MIDI Note
 
 int buttonLED = 13;
 
 // MIDI note naming
-String noteArray[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+String noteArray[12] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 int noteArrayLength = 12;
+int noteNumber = 60;  // starting at middle C
 int noteIndex = 0;  // for accessing NOTES[] array
 String note = noteArray[noteIndex];  //default note on startup will be A1
 int noteOctave = 4;  // this is the middle octave for midi
@@ -23,6 +24,7 @@ int noteOctave = 4;  // this is the middle octave for midi
 // boolean expressions to ensure button presses only run their functions once
 bool buttonUpPressed = false;  
 bool buttonDownPressed = false;
+bool buttonSendPressed = false;
 
 // create a MIDI object instance
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
@@ -35,6 +37,7 @@ void setup()
   MIDI.begin();
   pinMode(BUTTON_UP, INPUT);
   pinMode(BUTTON_DOWN, INPUT);
+  pinMode(BUTTON_SEND_NOTE, INPUT);
   
 
 }
@@ -53,27 +56,42 @@ void loop()
   // NOTE DOWN
   changeNote(BUTTON_DOWN, buttonDownPressed, digitalRead(BUTTON_DOWN), buttonLED);
 
-
-  MIDI.sendNoteOn(45, 100, 1);
-
-  delay(1000);
-
-  MIDI.sendNoteOff(45, 100, 1);
-
-  delay(1000);
+  // SEND NOTE
+  sendNote(BUTTON_SEND_NOTE, buttonSendPressed, digitalRead(BUTTON_SEND_NOTE), noteNumber, 100, 1);
   
-  Serial.print("INDEX: ");
-  Serial.print(noteIndex);
-  Serial.print(" -- ");
-  Serial.print("OCTAVE: ");
-  Serial.print(noteOctave);
-  Serial.print(" -- ");
-  Serial.print("MIDI_NOTE: ");
-  Serial.print(noteArray[noteIndex]);
-  Serial.println(noteOctave);
+//  Serial.print("INDEX: ");
+//  Serial.print(noteIndex);
+//  Serial.print(" -- ");
+//  Serial.print("OCTAVE: ");
+//  Serial.print(noteOctave);
+//  Serial.print(" -- ");
+//  Serial.print("MIDI_NOTE: ");
+//  Serial.print(noteArray[noteIndex]);
+//  Serial.println(noteOctave);
 }
 
 
+
+
+
+// SEND A MIDI NOTE
+void sendNote(int buttonPin, bool buttonPressedBool, int buttonState, int number, int velocity, int channel) {
+
+  // If button NOT pressed
+  if (buttonState == LOW) {
+    MIDI.sendNoteOff(number, velocity, channel);
+  }
+
+  if (buttonState == HIGH) {
+    MIDI.sendNoteOn(number, velocity, channel);
+  }
+}
+
+
+
+
+
+// CHANGE THE MIDI NOTE BEING SENT
 void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledPin) {
 
   // If button NOT pressed
@@ -93,23 +111,30 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
     if (!buttonPressedBool) {
       
       if (buttonPin == BUTTON_UP) {
+        noteNumber += 1;
         noteIndex += 1;
         buttonUpPressed = true;
         changeOctave();
       }
+      
       if (buttonPin == BUTTON_DOWN) {
+        noteNumber += -1;
         noteIndex += -1;
         buttonDownPressed = true;
         changeOctave();
-      }
-      
+      } 
     }
   }
 }
 
 
-//change the noteOctave accordingly when noteIndex exceeds the size of noteArray
 
+
+
+
+
+
+// CHANGE THE OCTAVE OF A MIDI NOTE
 void changeOctave() {
 
   if (buttonUpPressed == true) {
