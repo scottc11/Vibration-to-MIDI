@@ -100,6 +100,8 @@ void sendNote(int buttonPin, bool noteOnBool, int buttonState, int number, int v
     if (noteOnBool != true) {
       MIDI.sendNoteOn(number, velocity, channel);
       noteOn = true;
+
+      delay(1000);
     }
     
   }
