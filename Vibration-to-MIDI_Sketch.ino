@@ -18,21 +18,23 @@ int buttonLED = 13;
 String noteArray[12] = {"A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"};
 int noteArrayLength = 12;
 int noteNumber = 60;  // starting at middle C
-int noteIndex = 0;  // for accessing NOTES[] array
+int noteIndex = 3;  // for accessing NOTES[] array
 String note = noteArray[noteIndex];  //default note on startup will be A1
-int noteOctave = 4;  // this is the middle octave for midi
+int noteOctave = 3;  // this is the middle octave in Ableton
 
 
 // boolean expressions to ensure button presses only run their functions once
 bool buttonUpPressed = false;  
 bool buttonDownPressed = false;
 bool noteOn = false;
+bool displayChange = false;
 
 // create a MIDI object instance
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 // create a LCD object instance
 rgb_lcd lcd;
+
 
 void setup() 
 {
@@ -47,8 +49,8 @@ void setup()
   pinMode(BUTTON_DOWN, INPUT);
   pinMode(BUTTON_SEND_NOTE, INPUT);
 
-
-  lcd.print("Hello, World!");
+  lcd.print(noteArray[noteIndex]);
+  lcd.print(noteOctave);
   
 }
 
@@ -63,7 +65,6 @@ void loop()
   //  int piezoReading = analogRead(PIEZO_PIN);
   //  int velocity = map(piezoReading, 0, 1023, 0, 127);  // convert reading to a velocity value (Between 0 - 127)
 
-  // BUTTON READINGS
 
   // NOTE UP
   changeNote(BUTTON_UP, buttonUpPressed, digitalRead(BUTTON_UP), buttonLED);
@@ -73,7 +74,9 @@ void loop()
 
   // SEND NOTE   input        bool
   sendNote(BUTTON_SEND_NOTE, noteOn, digitalRead(BUTTON_SEND_NOTE), noteNumber, 100, 1);
-  
+
+  // UPDATE DISPLAY
+  updateDisplay();
 }
 
 
@@ -110,9 +113,25 @@ void sendNote(int buttonPin, bool noteOnBool, int buttonState, int number, int v
 
 
 
+
+// UPDATE DISPLAY
 void updateDisplay() {
+
+  // catching
+  if (displayChange == true) {
+    lcd.clear();
+    lcd.print(noteArray[noteIndex]);
+    lcd.print(noteOctave);
+    
+    displayChange = false;
+  }
+  
   
 }
+
+
+
+
 
 
 // CHANGE THE MIDI NOTE BEING SENT
@@ -138,6 +157,7 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
         noteNumber += 1;
         noteIndex += 1;
         buttonUpPressed = true;
+        displayChange = true; // So updateDisplay() can run its code
         changeOctave();
       }
       
@@ -145,6 +165,7 @@ void changeNote(int buttonPin, bool buttonPressedBool, int buttonState, int ledP
         noteNumber += -1;
         noteIndex += -1;
         buttonDownPressed = true;
+        displayChange = true;
         changeOctave();
       } 
     }
