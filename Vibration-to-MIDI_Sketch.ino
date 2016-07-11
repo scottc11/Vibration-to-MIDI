@@ -24,7 +24,7 @@ int noteOctave = 4;  // this is the middle octave for midi
 // boolean expressions to ensure button presses only run their functions once
 bool buttonUpPressed = false;  
 bool buttonDownPressed = false;
-bool buttonSendPressed = false;
+bool noteOn = false;
 
 // create a MIDI object instance
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
@@ -39,8 +39,12 @@ void setup()
   pinMode(BUTTON_DOWN, INPUT);
   pinMode(BUTTON_SEND_NOTE, INPUT);
   
-
 }
+
+
+
+
+
 
 void loop() 
 {
@@ -56,8 +60,8 @@ void loop()
   // NOTE DOWN
   changeNote(BUTTON_DOWN, buttonDownPressed, digitalRead(BUTTON_DOWN), buttonLED);
 
-  // SEND NOTE
-  sendNote(BUTTON_SEND_NOTE, buttonSendPressed, digitalRead(BUTTON_SEND_NOTE), noteNumber, 100, 1);
+  // SEND NOTE   input        bool
+  sendNote(BUTTON_SEND_NOTE, noteOn, digitalRead(BUTTON_SEND_NOTE), noteNumber, 100, 1);
   
 //  Serial.print("INDEX: ");
 //  Serial.print(noteIndex);
@@ -68,24 +72,39 @@ void loop()
 //  Serial.print("MIDI_NOTE: ");
 //  Serial.print(noteArray[noteIndex]);
 //  Serial.println(noteOctave);
+
 }
+
 
 
 
 
 
 // SEND A MIDI NOTE
-void sendNote(int buttonPin, bool buttonPressedBool, int buttonState, int number, int velocity, int channel) {
+void sendNote(int buttonPin, bool noteOnBool, int buttonState, int number, int velocity, int channel) {
 
   // If button NOT pressed
   if (buttonState == LOW) {
+    
     MIDI.sendNoteOff(number, velocity, channel);
+    
+    // boolean expression so function only runs once
+    if (noteOnBool == true) {
+      noteOn = false;
+    }
   }
 
   if (buttonState == HIGH) {
-    MIDI.sendNoteOn(number, velocity, channel);
+    
+
+    if (noteOnBool != true) {
+      MIDI.sendNoteOn(number, velocity, channel);
+      noteOn = true;
+    }
+    
   }
 }
+
 
 
 
@@ -151,8 +170,5 @@ void changeOctave() {
     }
   }
 }
-
-
-
 
 
