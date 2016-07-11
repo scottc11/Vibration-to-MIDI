@@ -1,3 +1,5 @@
+#include <rgb_lcd.h>
+
 #include <MIDI.h>
 #include <midi_Defs.h>
 #include <midi_Message.h>
@@ -29,15 +31,24 @@ bool noteOn = false;
 // create a MIDI object instance
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
+// create a LCD object instance
+rgb_lcd lcd;
 
 void setup() 
 {
   // MIDI.begin starts the serial port at the MIDI baudrate (31250).
   // Set the input channel at the argument given (if any, else 1).
+
+  // init libraries
   MIDI.begin();
+  lcd.begin(16, 2);
+  
   pinMode(BUTTON_UP, INPUT);
   pinMode(BUTTON_DOWN, INPUT);
   pinMode(BUTTON_SEND_NOTE, INPUT);
+
+
+  lcd.print("Hello, World!");
   
 }
 
@@ -63,16 +74,6 @@ void loop()
   // SEND NOTE   input        bool
   sendNote(BUTTON_SEND_NOTE, noteOn, digitalRead(BUTTON_SEND_NOTE), noteNumber, 100, 1);
   
-//  Serial.print("INDEX: ");
-//  Serial.print(noteIndex);
-//  Serial.print(" -- ");
-//  Serial.print("OCTAVE: ");
-//  Serial.print(noteOctave);
-//  Serial.print(" -- ");
-//  Serial.print("MIDI_NOTE: ");
-//  Serial.print(noteArray[noteIndex]);
-//  Serial.println(noteOctave);
-
 }
 
 
@@ -109,7 +110,9 @@ void sendNote(int buttonPin, bool noteOnBool, int buttonState, int number, int v
 
 
 
-
+void updateDisplay() {
+  
+}
 
 
 // CHANGE THE MIDI NOTE BEING SENT
