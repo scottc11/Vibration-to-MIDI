@@ -11,6 +11,11 @@ const int BUTTON_UP = 8; // MIDI note UP button set to Digital Pin 8
 const int BUTTON_DOWN = 9; // MIDI note DOWN button set to Digital Pin 9
 const int BUTTON_SEND_NOTE = 10;  // Send MIDI Note
 
+// POTENTIOMETER
+const int potPin = 0;
+int potVal;
+
+
 int buttonLED = 13;
 
 // MIDI note naming
@@ -47,10 +52,14 @@ void setup()
   // init libraries
   MIDI.begin();
   lcd.begin(16, 2);
-  
+
+  //BUTTONS
   pinMode(BUTTON_UP, INPUT);
   pinMode(BUTTON_DOWN, INPUT);
   pinMode(BUTTON_SEND_NOTE, INPUT);
+
+  // POTENTIOMETERS
+//  pinMode(potPin, INPUT);
 
   lcd.print(noteArray[noteIndex]);
   lcd.print(noteOctave);
@@ -80,6 +89,10 @@ void loop()
 
   // UPDATE DISPLAY
   updateDisplay();
+
+
+  potVal = analogRead(potPin);
+  
 }
 
 
@@ -120,11 +133,13 @@ void sendNote(int buttonPin, bool noteOnBool, int buttonState, int number, int v
 // UPDATE DISPLAY
 void updateDisplay() {
 
-  // catching
+  // catching required - had screen errors when calling updateDisplay() without catching
   if (displayChange == true) {
     lcd.clear();
     lcd.print(noteArray[noteIndex]);
     lcd.print(noteOctave);
+    lcd.print(" -- pot: ");
+    lcd.print(potVal);
     
     displayChange = false;
   }
